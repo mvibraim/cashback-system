@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  app:
+    build: .
+    container_name: cashback_system_app
+    restart: always
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo-db
+    environment:
+      - MONGODB_HOSTNAME=mongo-db
+      - MONGODB_DATABASE=cashback_system
+      - PORT=3001
+
+  mongo-db:
+    image: bitnami/mongodb:4.2.6-debian-10-r14
+    container_name: mongo-db
+    restart: always
