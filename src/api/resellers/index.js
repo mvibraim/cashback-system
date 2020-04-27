@@ -1,9 +1,9 @@
 const { Router } = require('express')
-const { index, create } = require('./controller')
+const { index, create, validate } = require('./controller')
 
 const router = new Router()
 
 router.get('/', index)
-router.post('/', create)
+router.post('/', validate('create'), create)
 
 module.exports = router
