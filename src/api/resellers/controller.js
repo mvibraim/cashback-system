@@ -28,18 +28,22 @@ const validate = (method) => {
       return [
         check('name')
           .exists().withMessage("name required")
-          .notEmpty().withMessage("name required"),
+          .notEmpty().withMessage("name required")
+          .isString().withMessage("must be string"),
         check('cpf')
           .exists().withMessage("cpf required")
           .notEmpty().withMessage("cpf required")
+          .isString().withMessage("must be string")
           .isNumeric().withMessage("must be numeric"),
         check('email')
           .exists().withMessage("email required")
           .notEmpty().withMessage("email required")
+          .isString().withMessage("must be string")
           .isEmail().withMessage("invalid email"),
         check('password')
           .exists().withMessage("password required")
           .notEmpty().withMessage("password required")
+          .isString().withMessage("must be string")
       ]
     }
   }
