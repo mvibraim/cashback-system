@@ -1,7 +1,7 @@
 const { check, validationResult } = require('express-validator')
 const { insertReseller, getResellers } = require('./resellers')
 
-const create = async (req, res) => {
+const create = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
@@ -14,12 +14,16 @@ const create = async (req, res) => {
       res.send({ message: 'New reseller inserted.' })
     }
   } catch (err) {
-    return next(err)
+    next(err)
   }
 }
 
-const index = async (req, res) => {
-  res.send(await getResellers());
+const index = async (req, res, next) => {
+  try {
+    res.send(await getResellers(req));
+  } catch (err) {
+    next(err)
+  }
 }
 
 const validate = (method) => {
