@@ -30,9 +30,9 @@ const validate = (method) => {
   switch (method) {
     case 'create': {
       return [
-        check('name')
-          .exists().withMessage("name required")
-          .notEmpty().withMessage("name required")
+        check('full_name')
+          .exists().withMessage("full_name required")
+          .notEmpty().withMessage("full_name required")
           .isString().withMessage("must be string"),
         check('cpf')
           .exists().withMessage("cpf required")
