@@ -1,17 +1,20 @@
 const { check, validationResult } = require('express-validator')
 const { insertReseller, getResellers } = require('./resellers')
+const { listResellerView, resellerView } = require('../../services/views/reseller')
 
 const create = async (req, res, next) => {
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.status(422).json({ errors: errors.array() });
+      res
+        .status(422)
+        .json({ errors: errors.array() });
     }
     else {
       const reseller = req.body;
-      await insertReseller(reseller);
-      res.send({ message: 'New reseller inserted.' })
+      inserted_reseller = await insertReseller(reseller);
+      res.json(resellerView(inserted_reseller))
     }
   } catch (err) {
     next(err)
@@ -20,7 +23,8 @@ const create = async (req, res, next) => {
 
 const index = async (req, res, next) => {
   try {
-    res.send(await getResellers(req));
+    response = listResellerView(await getResellers(req))
+    res.json(response);
   } catch (err) {
     next(err)
   }

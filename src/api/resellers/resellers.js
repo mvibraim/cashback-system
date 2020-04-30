@@ -6,8 +6,8 @@ const page_size = 10;
 
 async function insertReseller(reseller) {
   const db = await databaseCursor();
-  const { insertedId } = await db.collection(collectionName).insertOne(reseller);
-  return insertedId;
+  const { ops: [inserted_reseller] } = await db.collection(collectionName).insertOne(reseller);
+  return inserted_reseller;
 }
 
 async function getResellers(req) {
