@@ -15,6 +15,6 @@ services:
       - PORT=3001
 
   mongo-db:
-    image: bitnami/mongodb:4.2.6-debian-10-r14
+    image: bitnami/mongodb:4.2.6-debian-10-r19
     container_name: mongo-db
     restart: always
