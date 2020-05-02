@@ -1,9 +1,9 @@
-const { Router } = require('express')
-const { index, create, validate } = require('./controller')
+import { Router } from 'express'
+import { index, create, validate } from './controller'
 
-const router = new Router()
+const resellersRouter = new Router()
 
-router.get('/', index)
-router.post('/', validate('create'), create)
+resellersRouter.get('/', index)
+resellersRouter.post('/', validate('create'), create)
 
-module.exports = router
+export default resellersRouter

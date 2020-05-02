@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+import { MongoClient } from 'mongodb';
 
 const hostname = process.env.MONGODB_HOSTNAME || "localhost"
 const database_name = process.env.MONGODB_DATABASE || "cashback-system"
@@ -16,7 +16,4 @@ async function databaseCursor() {
   return database;
 }
 
-module.exports = {
-  databaseCursor,
-  startDatabase,
-};
+export { databaseCursor, startDatabase }

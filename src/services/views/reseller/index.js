@@ -1,4 +1,4 @@
-resellerView = (reseller) => {
+function resellerView(reseller) {
   return {
     id: reseller._id,
     full_name: reseller.full_name,
@@ -7,7 +7,7 @@ resellerView = (reseller) => {
   }
 }
 
-listResellerView = (data) => {
+function listResellerView(data) {
   return {
     results: data.results.map((reseller) => resellerView(reseller)),
     previous: data.previous,
@@ -17,7 +17,4 @@ listResellerView = (data) => {
   }
 }
 
-module.exports = {
-  resellerView,
-  listResellerView
-}
+export { resellerView, listResellerView }

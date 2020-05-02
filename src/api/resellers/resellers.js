@@ -1,5 +1,5 @@
-const { databaseCursor } = require('../../services/mongo');
-const MongoPaging = require('mongo-cursor-pagination');
+import { databaseCursor } from '../../services/mongo'
+import MongoPaging from 'mongo-cursor-pagination'
 
 const collectionName = 'resellers';
 const page_size = 10;
@@ -15,7 +15,4 @@ async function getResellers(req) {
   return await MongoPaging.findWithReq(req, db.collection(collectionName), { limit: page_size })
 }
 
-module.exports = {
-  insertReseller,
-  getResellers
-}
+export { insertReseller, getResellers }

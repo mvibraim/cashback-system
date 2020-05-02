@@ -1,11 +1,11 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const compression = require('compression');
+import express from 'express'
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import helmet from 'helmet'
+import morgan from 'morgan'
+import compression from 'compression'
 
-module.exports = (apiRoot, routes) => {
+export default function (apiRoot, routes) {
   const app = express()
 
   app.use(helmet());

@@ -1,8 +1,8 @@
-const { Router } = require('express')
-const resellers = require('./resellers')
+import { Router } from 'express'
+import resellersRouter from './resellers'
 
-const router = new Router()
+const apiRouter = new Router()
 
-router.use('/resellers', resellers)
+apiRouter.use('/resellers', resellersRouter)
 
-module.exports = router
+export default apiRouter

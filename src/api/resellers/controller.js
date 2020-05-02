@@ -1,6 +1,6 @@
-const { check, validationResult } = require('express-validator')
-const { insertReseller, getResellers } = require('./resellers')
-const { listResellerView, resellerView } = require('../../services/views/reseller')
+import { check, validationResult } from 'express-validator'
+import { insertReseller, getResellers } from './resellers'
+import { listResellerView, resellerView } from '../../services/views/reseller'
 
 const create = async (req, res, next) => {
   try {
@@ -12,8 +12,7 @@ const create = async (req, res, next) => {
         .json({ errors: errors.array() });
     }
     else {
-      const reseller = req.body;
-      inserted_reseller = await insertReseller(reseller);
+      const inserted_reseller = await insertReseller(req.body);
       res.json(resellerView(inserted_reseller))
     }
   } catch (err) {
@@ -23,7 +22,7 @@ const create = async (req, res, next) => {
 
 const index = async (req, res, next) => {
   try {
-    response = listResellerView(await getResellers(req))
+    const response = listResellerView(await getResellers(req))
     res.json(response);
   } catch (err) {
     next(err)
@@ -57,8 +56,4 @@ const validate = (method) => {
   }
 }
 
-module.exports = {
-  create,
-  index,
-  validate
-};
+export { create, index, validate }
