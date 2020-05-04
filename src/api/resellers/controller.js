@@ -31,8 +31,7 @@ const validateReseller = (method) => {
         check('cpf')
           .exists().withMessage("cpf required")
           .notEmpty().withMessage("cpf required")
-          .isString().withMessage("must be string")
-          .isNumeric().withMessage("must be numeric"),
+          .isString().withMessage("must be string"),
         check('email')
           .exists().withMessage("email required")
           .notEmpty().withMessage("email required")
