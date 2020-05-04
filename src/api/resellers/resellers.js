@@ -5,6 +5,7 @@ const collectionName = 'resellers';
 const page_size = 10;
 
 async function insertReseller(reseller) {
+  reseller.purchases = []
   const db = await databaseCursor();
   const { ops: [inserted_reseller] } = await db.collection(collectionName).insertOne(reseller);
   return inserted_reseller;

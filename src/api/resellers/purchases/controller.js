@@ -1,35 +1,26 @@
 import { check, validationResult } from 'express-validator'
-import { insertReseller, getResellers } from './resellers'
-import { listResellerView, resellerView } from '../../services/views/reseller'
+import { insertPurchase, getPurchases } from './purchases'
+import { listPurchaseView, purchaseView } from '../../../services/views/purchase'
 
-const createReseller = async (req, res, next) => {
+const createPurchase = async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      res
-        .status(422)
-        .json({ errors: errors.array() });
-    }
-    else {
-      const inserted_reseller = await insertReseller(req.body);
-      res.json(resellerView(inserted_reseller))
-    }
+    const inserted_purchase = await insertPurchase(req.body, req.params.cpf);
+    res.json(purchaseView(inserted_purchase))
   } catch (err) {
     next(err)
   }
 }
 
-const indexResellers = async (req, res, next) => {
+const indexPurchases = async (req, res, next) => {
   try {
-    const response = listResellerView(await getResellers(req))
-    res.json(response);
+    const response = await getPurchases(req)
+    res.json(listPurchaseView(response));
   } catch (err) {
     next(err)
   }
 }
 
-const validateReseller = (method) => {
+const validatePurchase = (method) => {
   switch (method) {
     case 'create': {
       return [
@@ -56,4 +47,4 @@ const validateReseller = (method) => {
   }
 }
 
-export { createReseller, indexResellers, validateReseller }
+export { createPurchase, indexPurchases, validatePurchase }
