@@ -4,20 +4,27 @@ import createError from 'http-errors'
 const collectionName = 'resellers';
 
 async function insertReseller(reseller) {
-  const db = await databaseCursor();
-
   reseller.cpf = reseller.cpf.replace(/\D/g, '')
-  reseller.purchases = []
 
-  const resellerWithCpf = await db.collection(collectionName).findOne({ cpf: reseller.cpf })
+  const resellerWithCpf = getReseller(reseller.cpf)
 
   if (resellerWithCpf) {
     throw createError(422, `Reseller with CPF '${reseller.cpf}' already exists`)
   }
   else {
-    const { ops: [inserted_reseller] } = await db.collection(collectionName).insertOne(reseller);
-    return inserted_reseller;
+    const db = await databaseCursor();
+
+    reseller.purchases = []
+
+    const { ops: [insertedReseller] } = await db.collection(collectionName).insertOne(reseller);
+
+    return insertedReseller;
   }
 }
 
-export { insertReseller }
+async function getReseller(cpf) {
+  const db = await databaseCursor();
+  return await db.collection(collectionName).findOne({ cpf: cpf })
+}
+
+export { insertReseller, getReseller }
