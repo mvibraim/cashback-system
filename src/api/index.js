@@ -9,7 +9,7 @@ apiRouter.get('*', function (req, res) {
   res
     .status(404)
     .json({
-      message: "route not found",
+      error: "Route not found",
       status: 404
     });
 });
