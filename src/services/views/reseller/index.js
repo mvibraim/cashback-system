@@ -7,14 +7,4 @@ function resellerView(reseller) {
   }
 }
 
-function listResellerView(data) {
-  return {
-    results: data.results.map((reseller) => resellerView(reseller)),
-    previous: data.previous,
-    hasPrevious: data.hasPrevious,
-    next: data.next,
-    hasNext: data.hasNext
-  }
-}
-
-export { resellerView, listResellerView }
+export { resellerView }
