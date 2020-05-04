@@ -8,10 +8,7 @@ apiRouter.use('/resellers', resellersRouter)
 apiRouter.get('*', function (req, res) {
   res
     .status(404)
-    .json({
-      error: "Route not found",
-      status: 404
-    });
+    .json({ error: "Route not found" });
 });
 
 export default apiRouter

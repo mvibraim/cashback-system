@@ -18,7 +18,7 @@ export default function (apiRoot, routes) {
 
   app.use((error, req, res, next) => {
     res.status(error.status)
-    res.json({ error: error.message, status: error.status })
+    res.json({ error: error.message })
   })
 
   return app
