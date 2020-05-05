@@ -1,5 +1,7 @@
 # Cashback System
 
+Calculates the cashback amount for each purchase from a reseller
+
 ## Some concepts and technologies used
 
 - Node.js
@@ -9,7 +11,7 @@
 - MongoDB database with official driver
 - Docker and Docker Compose
 - Payload validation using express-validation
-- External requests with node-fetch
+- External request with node-fetch
 
 ## Next steps
 
