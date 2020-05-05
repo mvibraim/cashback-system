@@ -6,13 +6,13 @@
 - Express with some middleware
 - Clean Code
 - Clean Architecture
-- MongoDB database with the official driver
+- MongoDB database with official driver
 - Docker and Docker Compose
 - Payload validation using express-validation
+- External requests with node-fetch
 
 ## Next steps
 
-- Request to an external system
 - Local and JWT authentication strategies using Passport
 - ES6 syntax
 - Object orientation
