@@ -8,7 +8,7 @@ const createReseller = async (req, res, next) => {
 
     if (!errors.isEmpty()) {
       res
-        .status(422)
+        .status(400)
         .json({ validation_errors: errors.array(), message: "Invalid params" });
     }
     else {

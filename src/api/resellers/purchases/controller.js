@@ -4,8 +4,17 @@ import { listPurchaseView, purchaseView } from '../../../services/views/purchase
 
 const createPurchase = async (req, res, next) => {
   try {
-    const inserted_purchase = await insertPurchase(req.body, req.params.cpf);
-    res.json(purchaseView(inserted_purchase))
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      res
+        .status(400)
+        .json({ validation_errors: errors.array(), message: "Invalid params" });
+    }
+    else {
+      const inserted_purchase = await insertPurchase(req.body, req.params.cpf);
+      res.json(purchaseView(inserted_purchase))
+    }
   } catch (err) {
     if (err.name == "ResellerWithCPFNotFound") {
       res.status(404).json({ message: err.message })
@@ -20,7 +29,7 @@ const indexPurchases = async (req, res, next) => {
   try {
     if (typeof req.query.previous !== 'undefined' && typeof req.query.next !== 'undefined') {
       res
-        .status(422)
+        .status(400)
         .json({ message: `Can't use query params 'next' and 'previous' simultaneously` })
     }
     else {
@@ -51,24 +60,18 @@ const validatePurchase = (method) => {
   switch (method) {
     case 'create': {
       return [
-        check('full_name')
-          .exists().withMessage("full_name required")
-          .notEmpty().withMessage("full_name required")
+        check('code')
+          .exists().withMessage("code required")
+          .notEmpty().withMessage("code required")
           .isString().withMessage("must be string"),
-        check('cpf')
-          .exists().withMessage("cpf required")
-          .notEmpty().withMessage("cpf required")
-          .isString().withMessage("must be string")
-          .isNumeric().withMessage("must be numeric"),
-        check('email')
-          .exists().withMessage("email required")
-          .notEmpty().withMessage("email required")
-          .isString().withMessage("must be string")
-          .isEmail().withMessage("invalid email"),
-        check('password')
-          .exists().withMessage("password required")
-          .notEmpty().withMessage("password required")
-          .isString().withMessage("must be string")
+        check('date')
+          .exists().withMessage("date required")
+          .notEmpty().withMessage("date required")
+          .custom((date) => !isNaN(Date.parse(date))).withMessage("must be date with format YYYY/MM/DD or YYYY-MM-DD"),
+        check('value')
+          .exists().withMessage("value required")
+          .notEmpty().withMessage("value required")
+          .custom((value) => Number.isInteger(value)).withMessage("must be integer")
       ]
     }
   }

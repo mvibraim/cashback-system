@@ -7,6 +7,6 @@ const resellersRouter = new Router()
 resellersRouter.post('/', validateReseller('create'), createReseller)
 
 resellersRouter.get('/:cpf/purchases', indexPurchases)
-resellersRouter.post('/:cpf/purchases', createPurchase)
+resellersRouter.post('/:cpf/purchases', validatePurchase('create'), createPurchase)
 
 export default resellersRouter
