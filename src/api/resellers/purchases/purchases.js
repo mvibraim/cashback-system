@@ -2,9 +2,26 @@ import { databaseCursor } from "../../../services/mongo";
 import { ObjectID } from "mongodb";
 import { head, last, reverse } from "lodash/array";
 import { getReseller } from "../resellers";
+import fetch from "node-fetch";
 
 const collectionName = "resellers";
 const page_size = 5;
+const headers = { token: "ZXPURQOARHiMc6Y0flhRC1LVlZQVFRnm" };
+
+const cashback_url =
+  "https://mdaqk8ek5j.execute-api.us-east-1.amazonaws.com/v1/cashback?cpf=12312312323";
+
+async function getCashback() {
+  let cashback_credit = fetch(cashback_url, { method: "GET", headers: headers })
+    .then((data) => {
+      return data.json();
+    })
+    .then((response) => {
+      return response.body.credit;
+    });
+
+  return cashback_credit;
+}
 
 async function insertPurchase(purchase, reseller_cpf) {
   const resellerWithCpf = await getReseller(reseller_cpf);
@@ -194,4 +211,4 @@ function calculate_cashback_value(cashback_percentage, value) {
   return cashback_percentage * value;
 }
 
-export { insertPurchase, getPurchases };
+export { insertPurchase, getPurchases, getCashback };

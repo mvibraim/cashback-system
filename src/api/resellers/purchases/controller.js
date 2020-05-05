@@ -1,5 +1,5 @@
 import { check, validationResult } from "express-validator";
-import { insertPurchase, getPurchases } from "./purchases";
+import { insertPurchase, getPurchases, getCashback } from "./purchases";
 
 import {
   listPurchaseView,
@@ -59,6 +59,18 @@ const indexPurchases = async (req, res, next) => {
   }
 };
 
+const purchasesCashback = async (req, res, next) => {
+  try {
+    let value = await getCashback();
+
+    console.log(value);
+
+    res.json({ value: value });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const validatePurchase = (method) => {
   switch (method) {
     case "create": {
@@ -89,4 +101,4 @@ const validatePurchase = (method) => {
   }
 };
 
-export { createPurchase, indexPurchases, validatePurchase };
+export { createPurchase, indexPurchases, validatePurchase, purchasesCashback };

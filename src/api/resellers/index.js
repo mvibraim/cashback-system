@@ -5,6 +5,7 @@ import {
   indexPurchases,
   createPurchase,
   validatePurchase,
+  purchasesCashback,
 } from "./purchases/controller";
 
 const resellersRouter = new Router();
@@ -18,5 +19,7 @@ resellersRouter.post(
   validatePurchase("create"),
   createPurchase
 );
+
+resellersRouter.get("/:cpf/cashback", purchasesCashback);
 
 export default resellersRouter;
