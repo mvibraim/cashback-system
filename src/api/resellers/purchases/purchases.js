@@ -2,7 +2,6 @@ import { databaseCursor } from '../../../services/mongo'
 import { ObjectID } from 'mongodb';
 import { head, last, reverse } from 'lodash/array'
 import { getReseller } from '../resellers'
-import createError from 'http-errors'
 
 const collectionName = 'resellers';
 const page_size = 2;
@@ -11,7 +10,9 @@ async function insertPurchase(purchase, reseller_cpf) {
   const resellerWithCpf = await getReseller(reseller_cpf)
 
   if (!resellerWithCpf) {
-    throw createError(404, `Reseller with CPF '${reseller_cpf}' not found`)
+    const error = new Error(`Reseller with CPF '${reseller_cpf}' not found`)
+    error.name = "ResellerWithCPFNotFound"
+    throw error
   }
   else {
     const db = await databaseCursor();
@@ -42,11 +43,12 @@ async function getPurchases(req) {
   const resellerWithCpf = await getReseller(cpf)
 
   if (!resellerWithCpf) {
-    throw createError(404, `Reseller with CPF '${cpf}' not found`)
+    const error = new Error(`Reseller with CPF '${cpf}' not found`)
+    error.name = "ResellerWithCPFNotFound"
+    throw error
   }
   else {
     const db = await databaseCursor();
-
     const next = req.query.next
     const previous = req.query.previous
 
@@ -92,7 +94,7 @@ async function getPurchases(req) {
             let { _id: firstPurchaseIdInPage } = head(purchases)
             let { _id: lastPurchaseIdInPage } = last(purchases)
 
-            let previousId =
+            let previousCursor =
               await db.collection(collectionName).aggregate([
                 { $match: { cpf: cpf } },
                 { $unwind: '$purchases' },
@@ -108,7 +110,7 @@ async function getPurchases(req) {
                     return null
                 })
 
-            let nextId =
+            let nextCursor =
               await db.collection(collectionName).aggregate([
                 { $match: { cpf: cpf } },
                 { $unwind: '$purchases' },
@@ -123,8 +125,8 @@ async function getPurchases(req) {
                     return null
                 })
 
-            results.next = nextId
-            results.previous = previousId
+            results.next = nextCursor
+            results.previous = previousCursor
           }
           else if (purchases.length == 0 && typeof next === 'undefined' && typeof previous === 'undefined') {
             results.next = null

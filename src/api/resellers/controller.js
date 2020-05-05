@@ -9,14 +9,19 @@ const createReseller = async (req, res, next) => {
     if (!errors.isEmpty()) {
       res
         .status(422)
-        .json({ errors: errors.array() });
+        .json({ validation_errors: errors.array(), message: "Invalid params" });
     }
     else {
-      const inserted_reseller = await insertReseller(req.body);
-      res.json(resellerView(inserted_reseller))
+      const insertedReseller = await insertReseller(req.body);
+      res.json(resellerView(insertedReseller))
     }
   } catch (err) {
-    next(err)
+    if (err.name == "ResellerWithCPFAlreadyExists") {
+      res.status(422).json({ message: err.message })
+    }
+    else {
+      next(err)
+    }
   }
 }
 

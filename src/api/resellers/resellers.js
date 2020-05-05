@@ -1,5 +1,4 @@
 import { databaseCursor } from '../../services/mongo'
-import createError from 'http-errors'
 
 const collectionName = 'resellers';
 
@@ -9,7 +8,9 @@ async function insertReseller(reseller) {
   const resellerWithCpf = getReseller(reseller.cpf)
 
   if (resellerWithCpf) {
-    throw createError(422, `Reseller with CPF '${reseller.cpf}' already exists`)
+    const error = new Error(`Reseller with CPF '${reseller.cpf}' already exists`)
+    error.name = "ResellerWithCPFAlreadyExists"
+    throw error
   }
   else {
     const db = await databaseCursor();

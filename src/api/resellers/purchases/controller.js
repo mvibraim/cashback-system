@@ -7,16 +7,43 @@ const createPurchase = async (req, res, next) => {
     const inserted_purchase = await insertPurchase(req.body, req.params.cpf);
     res.json(purchaseView(inserted_purchase))
   } catch (err) {
-    next(err)
+    if (err.name == "ResellerWithCPFNotFound") {
+      res.status(404).json({ message: err.message })
+    }
+    else {
+      next(err)
+    }
   }
 }
 
 const indexPurchases = async (req, res, next) => {
   try {
-    const response = await getPurchases(req)
-    res.json(listPurchaseView(response));
+    if (typeof req.query.previous !== 'undefined' && typeof req.query.next !== 'undefined') {
+      res
+        .status(422)
+        .json({ message: `Can't use query params 'next' and 'previous' simultaneously` })
+    }
+    else {
+      const response = await getPurchases(req)
+      res.json(listPurchaseView(response));
+    }
   } catch (err) {
-    next(err)
+    if (err.name == "ResellerWithCPFNotFound") {
+      res.status(404).json({ message: err.message })
+    }
+    else if (err.stack.includes("ObjectID") && typeof req.query.previous !== 'undefined') {
+      res
+        .status(400)
+        .json({ message: `Query param 'previous' is invalid` })
+    }
+    else if (err.stack.includes("ObjectID") && typeof req.query.next !== 'undefined') {
+      res
+        .status(400)
+        .json({ message: `Query param 'next' is invalid` })
+    }
+    else {
+      next(err)
+    }
   }
 }
 
