@@ -184,31 +184,31 @@ function calculate_status(reseller_cpf) {
 }
 
 function calculate_cashback(purchase) {
-  const cashback_percentage = calculate_cashback_percentage(purchase.value);
+  const cashback_percentage = calculate_cashback_percentage(purchase.amount);
 
-  const cashback_value = calculate_cashback_value(
+  const cashback_amount = calculate_cashback_amount(
     cashback_percentage,
-    purchase.value
+    purchase.amount
   );
 
   purchase.cashback_percentage = cashback_percentage;
-  purchase.cashback_value = cashback_value;
+  purchase.cashback_amount = cashback_amount;
 
   return purchase;
 }
 
-function calculate_cashback_percentage(value) {
-  if (value <= 100000) {
+function calculate_cashback_percentage(amount) {
+  if (amount <= 100000) {
     return 0.1;
-  } else if (value > 100000 && value <= 150000) {
+  } else if (amount > 100000 && amount <= 150000) {
     return 0.15;
   } else {
     return 0.2;
   }
 }
 
-function calculate_cashback_value(cashback_percentage, value) {
-  return cashback_percentage * value;
+function calculate_cashback_amount(cashback_percentage, amount) {
+  return cashback_percentage * amount;
 }
 
 export { insertPurchase, getPurchases, getCashback };

@@ -61,11 +61,8 @@ const indexPurchases = async (req, res, next) => {
 
 const purchasesCashback = async (req, res, next) => {
   try {
-    let value = await getCashback();
-
-    console.log(value);
-
-    res.json({ value: value });
+    let amount = await getCashback();
+    res.json({ amount: amount });
   } catch (err) {
     next(err);
   }
@@ -89,12 +86,12 @@ const validatePurchase = (method) => {
           .withMessage("date required")
           .custom((date) => !isNaN(Date.parse(date)))
           .withMessage("must be date with format YYYY/MM/DD or YYYY-MM-DD"),
-        check("value")
+        check("amount")
           .exists()
-          .withMessage("value required")
+          .withMessage("amount required")
           .notEmpty()
-          .withMessage("value required")
-          .custom((value) => Number.isInteger(value))
+          .withMessage("amount required")
+          .custom((amount) => Number.isInteger(amount))
           .withMessage("must be integer"),
       ];
     }
