@@ -14,7 +14,7 @@ function purchaseView(purchase) {
 
 function listPurchaseView(data) {
   return {
-    results: data.purchases.map((purchase) => purchaseView(purchase)),
+    purchases: data.purchases.map((purchase) => purchaseView(purchase)),
     previous: data.previous,
     next: data.next
   }

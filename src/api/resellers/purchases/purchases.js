@@ -4,7 +4,7 @@ import { head, last, reverse } from 'lodash/array'
 import { getReseller } from '../resellers'
 
 const collectionName = 'resellers';
-const page_size = 2;
+const page_size = 5;
 
 async function insertPurchase(purchase, reseller_cpf) {
   const resellerWithCpf = await getReseller(reseller_cpf)
@@ -69,7 +69,7 @@ async function getPurchases(req) {
     }
 
     const purchases =
-      resellerAggregateCursor
+      await resellerAggregateCursor
         .limit(page_size)
         .project({ purchases: 1, _id: 0 })
         .toArray()
@@ -81,63 +81,74 @@ async function getPurchases(req) {
           return purchases
         })
         .then(async function (purchases) {
-          const results = {}
-
           if (typeof previous !== 'undefined') {
-            results.purchases = reverse(purchases)
+            return reverse(purchases)
           }
           else {
-            results.purchases = purchases
+            return purchases
           }
-
-          if (purchases.length > 0) {
-            let { _id: firstPurchaseIdInPage } = head(purchases)
-            let { _id: lastPurchaseIdInPage } = last(purchases)
-
-            let previousCursor =
-              await db.collection(collectionName).aggregate([
-                { $match: { cpf: cpf } },
-                { $unwind: '$purchases' },
-                { $match: { 'purchases._id': { $gt: ObjectID(firstPurchaseIdInPage) } } },
-                { $sort: { 'purchases._id': 1 } },
-                { $limit: 1 }
-              ])
-                .toArray()
-                .then(function (resellersList) {
-                  if (resellersList.length == 1)
-                    return resellersList[0].purchases._id
-                  else
-                    return null
-                })
-
-            let nextCursor =
-              await db.collection(collectionName).aggregate([
-                { $match: { cpf: cpf } },
-                { $unwind: '$purchases' },
-                { $match: { 'purchases._id': { $lt: ObjectID(lastPurchaseIdInPage) } } },
-                { $limit: 1 }
-              ])
-                .toArray()
-                .then(function (resellersList) {
-                  if (resellersList.length == 1)
-                    return resellersList[0].purchases._id
-                  else
-                    return null
-                })
-
-            results.next = nextCursor
-            results.previous = previousCursor
-          }
-          else if (purchases.length == 0 && typeof next === 'undefined' && typeof previous === 'undefined') {
-            results.next = null
-            results.previous = null
-          }
-
-          return results
         })
 
-    return purchases
+    const cursors = await findCursors(purchases, cpf)
+
+    const response = {
+      purchases: purchases,
+      next: cursors.next,
+      previous: cursors.previous
+    }
+
+    return response
   }
+}
+
+async function findCursors(purchases, cpf) {
+  const db = await databaseCursor()
+  const cursors = {}
+
+  if (purchases.length > 0) {
+    let { _id: firstPurchaseIdInPage } = head(purchases)
+    let { _id: lastPurchaseIdInPage } = last(purchases)
+
+    let previousCursor =
+      await db.collection(collectionName).aggregate([
+        { $match: { cpf: cpf } },
+        { $unwind: '$purchases' },
+        { $match: { 'purchases._id': { $gt: ObjectID(firstPurchaseIdInPage) } } },
+        { $sort: { 'purchases._id': 1 } },
+        { $limit: 1 }
+      ])
+        .toArray()
+        .then(function (resellersList) {
+          if (resellersList.length == 1)
+            return resellersList[0].purchases._id
+          else
+            return null
+        })
+
+    let nextCursor =
+      await db.collection(collectionName).aggregate([
+        { $match: { cpf: cpf } },
+        { $unwind: '$purchases' },
+        { $match: { 'purchases._id': { $lt: ObjectID(lastPurchaseIdInPage) } } },
+        { $limit: 1 }
+      ])
+        .toArray()
+        .then(function (resellersList) {
+          if (resellersList.length == 1)
+            return resellersList[0].purchases._id
+          else
+            return null
+        })
+
+    cursors.next = nextCursor
+    cursors.previous = previousCursor
+  }
+  else if (purchases.length == 0 && typeof next === 'undefined' && typeof previous === 'undefined') {
+    cursors.next = null
+    cursors.previous = null
+  }
+
+  return cursors
 }
 
 function calculate_status(reseller_cpf) {
