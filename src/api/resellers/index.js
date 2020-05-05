@@ -1,12 +1,22 @@
-import { Router } from 'express'
-import { createReseller, validateReseller } from './controller'
-import { indexPurchases, createPurchase, validatePurchase } from './purchases/controller'
+import { Router } from "express";
+import { createReseller, validateReseller } from "./controller";
 
-const resellersRouter = new Router()
+import {
+  indexPurchases,
+  createPurchase,
+  validatePurchase,
+} from "./purchases/controller";
 
-resellersRouter.post('/', validateReseller('create'), createReseller)
+const resellersRouter = new Router();
 
-resellersRouter.get('/:cpf/purchases', indexPurchases)
-resellersRouter.post('/:cpf/purchases', validatePurchase('create'), createPurchase)
+resellersRouter.post("/", validateReseller("create"), createReseller);
 
-export default resellersRouter
+resellersRouter.get("/:cpf/purchases", indexPurchases);
+
+resellersRouter.post(
+  "/:cpf/purchases",
+  validatePurchase("create"),
+  createPurchase
+);
+
+export default resellersRouter;

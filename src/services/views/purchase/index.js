@@ -1,23 +1,22 @@
 function purchaseView(purchase) {
-  purchase.id = purchase._id
-  delete purchase._id
+  purchase.id = purchase._id;
+  delete purchase._id;
 
   if (purchase.status == 0) {
-    purchase.status = "Em validação"
-  }
-  else {
-    purchase.status = "Aprovado"
+    purchase.status = "Em validação";
+  } else {
+    purchase.status = "Aprovado";
   }
 
-  return purchase
+  return purchase;
 }
 
 function listPurchaseView(data) {
   return {
     purchases: data.purchases.map((purchase) => purchaseView(purchase)),
     previous: data.previous,
-    next: data.next
-  }
+    next: data.next,
+  };
 }
 
-export { purchaseView, listPurchaseView }
+export { purchaseView, listPurchaseView };
