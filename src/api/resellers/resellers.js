@@ -1,11 +1,11 @@
-import { databaseCursor } from "../../services/mongo";
+import { databaseConnection } from "../../services/mongo";
 
 const collectionName = "resellers";
 
 async function insertReseller(reseller) {
   reseller.cpf = reseller.cpf.replace(/\D/g, "");
 
-  const resellerWithCpf = getReseller(reseller.cpf);
+  const resellerWithCpf = await getReseller(reseller.cpf);
 
   if (resellerWithCpf) {
     const error = new Error(
@@ -15,21 +15,24 @@ async function insertReseller(reseller) {
     error.name = "ResellerWithCPFAlreadyExists";
     throw error;
   } else {
-    const db = await databaseCursor();
-
     reseller.purchases = [];
 
     const {
       ops: [insertedReseller],
-    } = await db.collection(collectionName).insertOne(reseller);
+    } = await databaseConnection()
+      .collection(collectionName)
+      .insertOne(reseller);
 
     return insertedReseller;
   }
 }
 
 async function getReseller(cpf) {
-  const db = await databaseCursor();
-  return await db.collection(collectionName).findOne({ cpf: cpf });
+  let reseller = await databaseConnection()
+    .collection(collectionName)
+    .findOne({ cpf: cpf });
+
+  return reseller;
 }
 
 export { insertReseller, getReseller };

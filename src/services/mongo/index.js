@@ -15,12 +15,8 @@ async function startDatabase() {
   database = connection.db();
 }
 
-async function databaseCursor() {
-  if (!database) {
-    await startDatabase();
-  }
-
+function databaseConnection() {
   return database;
 }
 
-export { databaseCursor, startDatabase };
+export { databaseConnection, startDatabase };

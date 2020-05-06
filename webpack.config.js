@@ -1,5 +1,5 @@
-const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
+const path = require("path");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   optimization: {
@@ -9,27 +9,27 @@ module.exports = {
         extractComments: false,
         terserOptions: {
           output: {
-            comments: false
-          }
-        }
+            comments: false,
+          },
+        },
       }),
-    ]
+    ],
   },
-  target: 'node',
-  mode: 'production',
-  entry: './src/index.js',
+  target: "node",
+  mode: "development",
+  entry: "./src/index.js",
   output: {
-    path: path.join(__dirname, 'build'),
-    filename: 'index.js'
+    path: path.join(__dirname, "build"),
+    filename: "index.js",
   },
   module: {
     rules: [
       {
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   resolve: {
-    modules: [path.resolve(__dirname, './src'), 'node_modules']
-  }
+    modules: [path.resolve(__dirname, "./src"), "node_modules"],
+  },
 };

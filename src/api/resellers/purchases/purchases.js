@@ -1,18 +1,18 @@
-import { databaseCursor } from "../../../services/mongo";
+import { databaseConnection } from "../../../services/mongo";
 import { ObjectID } from "mongodb";
 import { head, last, reverse } from "lodash/array";
 import { getReseller } from "../resellers";
 import fetch from "node-fetch";
 
 const collectionName = "resellers";
-const page_size = 5;
+const pageSize = 5;
 const headers = { token: "ZXPURQOARHiMc6Y0flhRC1LVlZQVFRnm" };
 
-const cashback_url =
+const cashbackUrl =
   "https://mdaqk8ek5j.execute-api.us-east-1.amazonaws.com/v1/cashback?cpf=12312312323";
 
 async function getCashback() {
-  let cashback_credit = fetch(cashback_url, { method: "GET", headers: headers })
+  let cashback_credit = fetch(cashbackUrl, { method: "GET", headers: headers })
     .then((data) => {
       return data.json();
     })
@@ -23,34 +23,34 @@ async function getCashback() {
   return cashback_credit;
 }
 
-async function insertPurchase(purchase, reseller_cpf) {
-  const resellerWithCpf = await getReseller(reseller_cpf);
+async function insertPurchase(purchase, resellerCpf) {
+  const resellerWithCpf = await getReseller(resellerCpf);
 
   if (!resellerWithCpf) {
-    const error = new Error(`Reseller with CPF '${reseller_cpf}' not found`);
+    const error = new Error(`Reseller with CPF '${resellerCpf}' not found`);
     error.name = "ResellerWithCPFNotFound";
     throw error;
   } else {
-    const db = await databaseCursor();
+    const newPurchase = calculateCashback(purchase);
+    newPurchase.status = calculateStatus(resellerCpf);
+    newPurchase.reseller_cpf = resellerCpf;
+    newPurchase._id = new ObjectID();
 
-    const new_purchase = calculate_cashback(purchase);
-    new_purchase.status = calculate_status(reseller_cpf);
-    new_purchase.reseller_cpf = reseller_cpf;
-    new_purchase._id = new ObjectID();
-
-    await db.collection(collectionName).findOneAndUpdate(
-      { cpf: reseller_cpf },
-      {
-        $push: {
-          purchases: {
-            $each: [new_purchase],
-            $position: 0,
+    await databaseConnection()
+      .collection(collectionName)
+      .findOneAndUpdate(
+        { cpf: resellerCpf },
+        {
+          $push: {
+            purchases: {
+              $each: [newPurchase],
+              $position: 0,
+            },
           },
-        },
-      }
-    );
+        }
+      );
 
-    return new_purchase;
+    return newPurchase;
   }
 }
 
@@ -63,11 +63,10 @@ async function getPurchases(req) {
     error.name = "ResellerWithCPFNotFound";
     throw error;
   } else {
-    const db = await databaseCursor();
     const next = req.query.next;
     const previous = req.query.previous;
 
-    const resellerAggregateCursor = await db
+    const resellerAggregateCursor = await databaseConnection()
       .collection(collectionName)
       .aggregate([{ $match: { cpf: cpf } }, { $unwind: "$purchases" }]);
 
@@ -84,7 +83,7 @@ async function getPurchases(req) {
     }
 
     const purchases = await resellerAggregateCursor
-      .limit(page_size)
+      .limit(pageSize)
       .project({ purchases: 1, _id: 0 })
       .toArray()
       .then(function (resellersList) {
@@ -115,14 +114,13 @@ async function getPurchases(req) {
 }
 
 async function findCursors(purchases, cpf) {
-  const db = await databaseCursor();
   const cursors = {};
 
   if (purchases.length > 0) {
     let { _id: firstPurchaseIdInPage } = head(purchases);
     let { _id: lastPurchaseIdInPage } = last(purchases);
 
-    let previousCursor = await db
+    let previousCursor = await databaseConnection()
       .collection(collectionName)
       .aggregate([
         { $match: { cpf: cpf } },
@@ -142,7 +140,7 @@ async function findCursors(purchases, cpf) {
         }
       });
 
-    let nextCursor = await db
+    let nextCursor = await databaseConnection()
       .collection(collectionName)
       .aggregate([
         { $match: { cpf: cpf } },
@@ -175,29 +173,25 @@ async function findCursors(purchases, cpf) {
   return cursors;
 }
 
-function calculate_status(reseller_cpf) {
-  if (reseller_cpf == "15350946056") {
+function calculateStatus(resellerCpf) {
+  if (resellerCpf == "15350946056") {
     return 1;
   } else {
     return 0;
   }
 }
 
-function calculate_cashback(purchase) {
-  const cashback_percentage = calculate_cashback_percentage(purchase.amount);
+function calculateCashback(purchase) {
+  const cashbackPercentage = calculateCashbackPercentage(purchase.amount);
+  const cashbackAmount = cashbackPercentage * purchase.amount;
 
-  const cashback_amount = calculate_cashback_amount(
-    cashback_percentage,
-    purchase.amount
-  );
-
-  purchase.cashback_percentage = cashback_percentage;
-  purchase.cashback_amount = cashback_amount;
+  purchase.cashback_percentage = cashbackPercentage;
+  purchase.cashback_amount = cashbackAmount;
 
   return purchase;
 }
 
-function calculate_cashback_percentage(amount) {
+function calculateCashbackPercentage(amount) {
   if (amount <= 100000) {
     return 0.1;
   } else if (amount > 100000 && amount <= 150000) {
@@ -205,10 +199,6 @@ function calculate_cashback_percentage(amount) {
   } else {
     return 0.2;
   }
-}
-
-function calculate_cashback_amount(cashback_percentage, amount) {
-  return cashback_percentage * amount;
 }
 
 export { insertPurchase, getPurchases, getCashback };

@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { createReseller, validateReseller } from "./controller";
+import { auth } from "./auth/controller";
+import { basic } from "../../services/passport";
 
 import {
   indexPurchases,
@@ -9,6 +11,8 @@ import {
 } from "./purchases/controller";
 
 const resellersRouter = new Router();
+
+resellersRouter.post("/auth", basic(), auth);
 
 resellersRouter.post("/", validateReseller("create"), createReseller);
 
