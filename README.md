@@ -13,11 +13,10 @@ Calculates the cashback amount for each purchase from a reseller
 - Payload validation using express-validation
 - External request with node-fetch
 - Cursor-based pagination without external library
-- Basic authentication strategy with Passport
+- Basic and JWT authentication strategies with Passport
 
 ## Next steps
 
-- JWT authentication strategy using Passport
 - ES6 syntax
 - Object orientation
 - API documentation
