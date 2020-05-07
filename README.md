@@ -14,12 +14,11 @@ Calculates the cashback amount for each purchase from a reseller
 - External request with node-fetch
 - Cursor-based pagination without external library
 - Basic and JWT authentication strategies with Passport
+- ES6 syntax
 
 ## Next steps
 
-- ES6 syntax
 - Object orientation
-- API documentation
 - Application logs
 - Unit and integration tests
 - Setup CircleCI (lint, build and test) and use badge
