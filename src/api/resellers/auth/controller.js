@@ -1,6 +1,6 @@
 import { sign } from "../../../services/jwt";
 
-export const auth = ({ user: reseller }, res, next) =>
+let auth = ({ user: reseller }, res, next) =>
   sign(reseller.cpf)
     .then((token) => {
       if (token) {
@@ -10,3 +10,5 @@ export const auth = ({ user: reseller }, res, next) =>
       return null;
     })
     .catch(next);
+
+export { auth };

@@ -4,40 +4,40 @@ import { head, last, reverse } from "lodash/array";
 import { getReseller } from "../resellers";
 import fetch from "node-fetch";
 
-const collectionName = "resellers";
-const pageSize = 5;
-const headers = { token: "ZXPURQOARHiMc6Y0flhRC1LVlZQVFRnm" };
+const COLLECTION = "resellers";
+const PAGE_SIZE = 5;
 
-const cashbackUrl =
-  "https://mdaqk8ek5j.execute-api.us-east-1.amazonaws.com/v1/cashback?cpf=12312312323";
+const CASHBACK_URL =
+  "https://mdaqk8ek5j.execute-api.us-east-1.amazonaws.com/v1/cashback";
 
-async function getCashback() {
-  let cashback_credit = fetch(cashbackUrl, { method: "GET", headers: headers })
-    .then((data) => {
-      return data.json();
-    })
-    .then((response) => {
-      return response.body.credit;
-    });
+let headers = { token: "ZXPURQOARHiMc6Y0flhRC1LVlZQVFRnm" };
+
+let getCashback = async (cpf) => {
+  let cashback_credit = fetch(`${CASHBACK_URL}?cpf=${cpf}`, {
+    method: "GET",
+    headers: headers,
+  })
+    .then((data) => data.json())
+    .then((response) => response.body.credit);
 
   return cashback_credit;
-}
+};
 
-async function insertPurchase(purchase, resellerCpf) {
-  const resellerWithCpf = await getReseller(resellerCpf);
+let insertPurchase = async (purchase, resellerCpf) => {
+  let resellerWithCpf = await getReseller(resellerCpf);
 
   if (!resellerWithCpf) {
-    const error = new Error(`Reseller with CPF '${resellerCpf}' not found`);
+    let error = new Error(`Reseller with CPF '${resellerCpf}' not found`);
     error.name = "ResellerWithCPFNotFound";
     throw error;
   } else {
-    const newPurchase = calculateCashback(purchase);
+    let newPurchase = calculateCashback(purchase);
     newPurchase.status = calculateStatus(resellerCpf);
     newPurchase.reseller_cpf = resellerCpf;
     newPurchase._id = new ObjectID();
 
     await databaseConnection()
-      .collection(collectionName)
+      .collection(COLLECTION)
       .findOneAndUpdate(
         { cpf: resellerCpf },
         {
@@ -52,22 +52,22 @@ async function insertPurchase(purchase, resellerCpf) {
 
     return newPurchase;
   }
-}
+};
 
-async function getPurchases(req) {
-  const cpf = req.params.cpf;
-  const resellerWithCpf = await getReseller(cpf);
+let getPurchases = async (req) => {
+  let cpf = req.params.cpf;
+  let resellerWithCpf = await getReseller(cpf);
 
   if (!resellerWithCpf) {
-    const error = new Error(`Reseller with CPF '${cpf}' not found`);
+    let error = new Error(`Reseller with CPF '${cpf}' not found`);
     error.name = "ResellerWithCPFNotFound";
     throw error;
   } else {
-    const next = req.query.next;
-    const previous = req.query.previous;
+    let next = req.query.next;
+    let previous = req.query.previous;
 
-    const resellerAggregateCursor = await databaseConnection()
-      .collection(collectionName)
+    let resellerAggregateCursor = await databaseConnection()
+      .collection(COLLECTION)
       .aggregate([{ $match: { cpf: cpf } }, { $unwind: "$purchases" }]);
 
     if (typeof next !== "undefined") {
@@ -82,18 +82,14 @@ async function getPurchases(req) {
         .sort({ "purchases._id": 1 });
     }
 
-    const purchases = await resellerAggregateCursor
-      .limit(pageSize)
+    let purchases = await resellerAggregateCursor
+      .limit(PAGE_SIZE)
       .project({ purchases: 1, _id: 0 })
       .toArray()
-      .then(function (resellersList) {
-        let purchases = resellersList.map((reseller) => {
-          return reseller.purchases;
-        });
-
-        return purchases;
-      })
-      .then(async function (purchases) {
+      .then((resellersList) =>
+        resellersList.map((reseller) => reseller.purchases)
+      )
+      .then((purchases) => {
         if (typeof previous !== "undefined") {
           return reverse(purchases);
         } else {
@@ -101,9 +97,9 @@ async function getPurchases(req) {
         }
       });
 
-    const cursors = await findCursors(purchases, cpf);
+    let cursors = await findCursors(purchases, cpf);
 
-    const response = {
+    let response = {
       purchases: purchases,
       next: cursors.next,
       previous: cursors.previous,
@@ -111,17 +107,17 @@ async function getPurchases(req) {
 
     return response;
   }
-}
+};
 
-async function findCursors(purchases, cpf) {
-  const cursors = {};
+let findCursors = async (purchases, cpf) => {
+  let cursors = {};
 
   if (purchases.length > 0) {
     let { _id: firstPurchaseIdInPage } = head(purchases);
     let { _id: lastPurchaseIdInPage } = last(purchases);
 
     let previousCursor = await databaseConnection()
-      .collection(collectionName)
+      .collection(COLLECTION)
       .aggregate([
         { $match: { cpf: cpf } },
         { $unwind: "$purchases" },
@@ -132,7 +128,7 @@ async function findCursors(purchases, cpf) {
         { $limit: 1 },
       ])
       .toArray()
-      .then(function (resellersList) {
+      .then((resellersList) => {
         if (resellersList.length == 1) {
           return resellersList[0].purchases._id;
         } else {
@@ -141,7 +137,7 @@ async function findCursors(purchases, cpf) {
       });
 
     let nextCursor = await databaseConnection()
-      .collection(collectionName)
+      .collection(COLLECTION)
       .aggregate([
         { $match: { cpf: cpf } },
         { $unwind: "$purchases" },
@@ -151,7 +147,7 @@ async function findCursors(purchases, cpf) {
         { $limit: 1 },
       ])
       .toArray()
-      .then(function (resellersList) {
+      .then((resellersList) => {
         if (resellersList.length == 1) {
           return resellersList[0].purchases._id;
         } else {
@@ -171,27 +167,27 @@ async function findCursors(purchases, cpf) {
   }
 
   return cursors;
-}
+};
 
-function calculateStatus(resellerCpf) {
+let calculateStatus = (resellerCpf) => {
   if (resellerCpf == "15350946056") {
     return 1;
   } else {
     return 0;
   }
-}
+};
 
-function calculateCashback(purchase) {
-  const cashbackPercentage = calculateCashbackPercentage(purchase.amount);
-  const cashbackAmount = cashbackPercentage * purchase.amount;
+let calculateCashback = (purchase) => {
+  let cashbackPercentage = calculateCashbackPercentage(purchase.amount);
+  let cashbackAmount = cashbackPercentage * purchase.amount;
 
   purchase.cashback_percentage = cashbackPercentage;
   purchase.cashback_amount = cashbackAmount;
 
   return purchase;
-}
+};
 
-function calculateCashbackPercentage(amount) {
+let calculateCashbackPercentage = (amount) => {
   if (amount <= 100000) {
     return 0.1;
   } else if (amount > 100000 && amount <= 150000) {
@@ -199,6 +195,6 @@ function calculateCashbackPercentage(amount) {
   } else {
     return 0.2;
   }
-}
+};
 
 export { insertPurchase, getPurchases, getCashback };

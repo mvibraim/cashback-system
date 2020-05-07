@@ -10,12 +10,10 @@ import {
   purchasesCashback,
 } from "./purchases/controller";
 
-const resellersRouter = new Router();
+let resellersRouter = new Router();
 
 resellersRouter.post("/auth", basic(), auth);
-
 resellersRouter.post("/", validateReseller("create"), createReseller);
-
 resellersRouter.get("/:cpf/purchases", jwt({ required: true }), indexPurchases);
 
 resellersRouter.post(

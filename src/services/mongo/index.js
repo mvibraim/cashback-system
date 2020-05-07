@@ -1,22 +1,20 @@
 import { MongoClient } from "mongodb";
 
-const hostname = process.env.MONGODB_HOSTNAME || "localhost";
-const database_name = process.env.MONGODB_DATABASE || "cashback-system";
+const HOSTNAME = process.env.MONGODB_HOSTNAME || "localhost";
+const DATABASE_NAME = process.env.MONGODB_DATABASE || "cashback-system";
+const URI = `mongodb://${HOSTNAME}/${DATABASE_NAME}`;
 
-const url = "mongodb://" + hostname + "/" + database_name;
 let database = null;
 
-async function startDatabase() {
-  const connection = await MongoClient.connect(url, {
+let startDatabase = async () => {
+  const connection = await MongoClient.connect(URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
 
   database = connection.db();
-}
+};
 
-function databaseConnection() {
-  return database;
-}
+let databaseConnection = () => database;
 
 export { databaseConnection, startDatabase };

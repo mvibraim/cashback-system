@@ -1,12 +1,12 @@
 import { Router } from "express";
 import resellersRouter from "./resellers";
 
-const apiRouter = new Router();
+let router = new Router();
 
-apiRouter.use("/resellers", resellersRouter);
+router.use("/resellers", resellersRouter);
 
-apiRouter.get("*", function (req, res) {
+router.get("*", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-export default apiRouter;
+export default router;

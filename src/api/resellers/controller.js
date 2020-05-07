@@ -2,16 +2,16 @@ import { check, validationResult } from "express-validator";
 import { insertReseller } from "./resellers";
 import { resellerView } from "../../services/views/reseller";
 
-const createReseller = async (req, res, next) => {
+let createReseller = async (req, res, next) => {
   try {
-    const errors = validationResult(req);
+    let errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       res
         .status(400)
         .json({ validation_errors: errors.array(), message: "Invalid params" });
     } else {
-      const insertedReseller = await insertReseller(req.body);
+      let insertedReseller = await insertReseller(req.body);
       res.json(resellerView(insertedReseller));
     }
   } catch (err) {
@@ -23,7 +23,7 @@ const createReseller = async (req, res, next) => {
   }
 };
 
-const validateReseller = (method) => {
+let validateReseller = (method) => {
   switch (method) {
     case "create": {
       return [

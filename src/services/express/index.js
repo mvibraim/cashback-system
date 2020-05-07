@@ -5,8 +5,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
 
-export default function (apiRoot, routes) {
-  const app = express();
+let app = (apiRoot, routes) => {
+  let app = express();
 
   app.use(helmet());
   app.use(bodyParser.json());
@@ -17,4 +17,6 @@ export default function (apiRoot, routes) {
   app.use(apiRoot, routes);
 
   return app;
-}
+};
+
+export default app;

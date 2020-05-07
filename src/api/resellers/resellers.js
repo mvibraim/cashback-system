@@ -1,38 +1,28 @@
 import { databaseConnection } from "../../services/mongo";
 
-const collectionName = "resellers";
+const COLLECTION = "resellers";
 
-async function insertReseller(reseller) {
+let insertReseller = async (reseller) => {
   reseller.cpf = reseller.cpf.replace(/\D/g, "");
 
-  const resellerWithCpf = await getReseller(reseller.cpf);
+  let resellerWithCpf = await getReseller(reseller.cpf);
 
   if (resellerWithCpf) {
-    const error = new Error(
-      `Reseller with CPF '${reseller.cpf}' already exists`
-    );
-
+    let error = new Error(`Reseller with CPF '${reseller.cpf}' already exists`);
     error.name = "ResellerWithCPFAlreadyExists";
     throw error;
   } else {
     reseller.purchases = [];
 
-    const {
+    let {
       ops: [insertedReseller],
-    } = await databaseConnection()
-      .collection(collectionName)
-      .insertOne(reseller);
+    } = await databaseConnection().collection(COLLECTION).insertOne(reseller);
 
     return insertedReseller;
   }
-}
+};
 
-async function getReseller(cpf) {
-  let reseller = await databaseConnection()
-    .collection(collectionName)
-    .findOne({ cpf: cpf });
-
-  return reseller;
-}
+let getReseller = async (cpf) =>
+  await databaseConnection().collection(COLLECTION).findOne({ cpf: cpf });
 
 export { insertReseller, getReseller };

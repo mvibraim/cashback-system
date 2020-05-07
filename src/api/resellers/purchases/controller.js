@@ -6,16 +6,16 @@ import {
   purchaseView,
 } from "../../../services/views/purchase";
 
-const createPurchase = async (req, res, next) => {
+let createPurchase = async (req, res, next) => {
   try {
-    const errors = validationResult(req);
+    let errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       res
         .status(400)
         .json({ validation_errors: errors.array(), message: "Invalid params" });
     } else {
-      const inserted_purchase = await insertPurchase(req.body, req.params.cpf);
+      let inserted_purchase = await insertPurchase(req.body, req.params.cpf);
       res.json(purchaseView(inserted_purchase));
     }
   } catch (err) {
@@ -27,7 +27,7 @@ const createPurchase = async (req, res, next) => {
   }
 };
 
-const indexPurchases = async (req, res, next) => {
+let indexPurchases = async (req, res, next) => {
   try {
     if (
       typeof req.query.previous !== "undefined" &&
@@ -37,7 +37,7 @@ const indexPurchases = async (req, res, next) => {
         message: `Can't use query params 'next' and 'previous' simultaneously`,
       });
     } else {
-      const response = await getPurchases(req);
+      let response = await getPurchases(req);
       res.json(listPurchaseView(response));
     }
   } catch (err) {
@@ -59,16 +59,16 @@ const indexPurchases = async (req, res, next) => {
   }
 };
 
-const purchasesCashback = async (req, res, next) => {
+let purchasesCashback = async (req, res, next) => {
   try {
-    let amount = await getCashback();
+    let amount = await getCashback(req.params.cpf);
     res.json({ amount: amount });
   } catch (err) {
     next(err);
   }
 };
 
-const validatePurchase = (method) => {
+let validatePurchase = (method) => {
   switch (method) {
     case "create": {
       return [

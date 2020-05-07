@@ -1,4 +1,4 @@
-function purchaseView(purchase) {
+let purchaseView = (purchase) => {
   purchase.id = purchase._id;
   delete purchase._id;
 
@@ -9,14 +9,14 @@ function purchaseView(purchase) {
   }
 
   return purchase;
-}
+};
 
-function listPurchaseView(data) {
+let listPurchaseView = (data) => {
   return {
     purchases: data.purchases.map((purchase) => purchaseView(purchase)),
     previous: data.previous,
     next: data.next,
   };
-}
+};
 
 export { purchaseView, listPurchaseView };
