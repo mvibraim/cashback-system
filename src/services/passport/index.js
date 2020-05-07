@@ -2,6 +2,7 @@ import passport from "passport";
 import { BasicStrategy } from "passport-http";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { databaseConnection } from "../mongo";
+import bcrypt from "bcryptjs";
 
 const JWT_SECRET = "qIlXTHBzNMRkVrqGfXWNXI7xPtRBrDDH";
 
@@ -16,13 +17,17 @@ passport.use(
           return null;
         }
 
-        if (reseller.password != password) {
+        let passwordIsValid = bcrypt
+          .compare(password, reseller.password)
+          .then((isValid) => isValid);
+
+        if (passwordIsValid) {
+          done(null, reseller);
+          return null;
+        } else {
           done(null, false);
           return null;
         }
-
-        done(null, reseller);
-        return null;
       })
       .catch(done);
   })

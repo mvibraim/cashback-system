@@ -1,4 +1,5 @@
 import { databaseConnection } from "../../services/mongo";
+import bcrypt from "bcryptjs";
 
 const COLLECTION = "resellers";
 
@@ -12,7 +13,10 @@ let insertReseller = async (reseller) => {
     error.name = "ResellerWithCPFAlreadyExists";
     throw error;
   } else {
+    let salt = await bcrypt.genSalt();
+
     reseller.purchases = [];
+    reseller.password = await bcrypt.hash(reseller.password, salt);
 
     let {
       ops: [insertedReseller],
