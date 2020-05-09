@@ -41,6 +41,7 @@ passport.use(
   )
 );
 
+/* eslint-disable no-unused-vars */
 let jwt = ({ required } = {}) => (req, res, next) =>
   passport.authenticate("jwt", { session: false }, (err, reseller, info) => {
     if (err || (required && !reseller)) {
@@ -67,5 +68,6 @@ let basic = () => (req, res, next) =>
       next();
     });
   })(req, res, next);
+/* eslint-enable no-unused-vars */
 
 export { basic, jwt };

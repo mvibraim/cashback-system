@@ -5,7 +5,8 @@
   "main": "src",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack-build": "webpack -d"
+    "webpack-build": "webpack -d",
+    "lint": "eslint src/**"
   },
   "author": "",
   "license": "ISC",

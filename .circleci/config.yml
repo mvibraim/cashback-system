@@ -1,0 +1,22 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@2.1
+
+jobs:
+  build:
+    executor:
+      name: node/default
+      tag: "14.2.0-alpine3.11"
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+            - run: npm run lint
+            - run: npm run webpack-build
+
+workflows:
+  build:
+    jobs:
+      - build

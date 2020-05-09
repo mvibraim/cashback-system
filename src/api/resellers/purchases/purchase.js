@@ -51,6 +51,7 @@ let purchaseSchema = new Schema(
   }
 );
 
+/* eslint-disable no-unused-vars */
 let insertPurchase = async (purchase, resellerCpf) => {
   let resellerWithCpf = await Reseller.findOne({ cpf: resellerCpf });
 
@@ -81,6 +82,7 @@ let insertPurchase = async (purchase, resellerCpf) => {
     return purchaseView(insertedPurchase);
   }
 };
+/* eslint-enable no-unused-vars */
 
 let getCashback = async (cpf) => {
   let headers = { token: "ZXPURQOARHiMc6Y0flhRC1LVlZQVFRnm" };

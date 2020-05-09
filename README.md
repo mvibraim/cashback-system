@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/mvibraim/cashback-system.svg?style=svg)](https://circleci.com/gh/mvibraim/cashback-system)
+
 # Cashback System
 
 Calculates the cashback amount for each purchase from a reseller
@@ -18,8 +20,7 @@ Calculates the cashback amount for each purchase from a reseller
 ## Next steps
 
 - Application logs
-- Unit and integration tests
-- Setup CircleCI (lint, build and test) and use badge
+- Unit and integration tests. Run in CircleCI
 
 ## Prerequisites
 
