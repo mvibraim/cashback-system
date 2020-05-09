@@ -1,5 +1,5 @@
-const path = require("path");
-const TerserPlugin = require("terser-webpack-plugin");
+let path = require("path");
+let TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   optimization: {

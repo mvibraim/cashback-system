@@ -10,11 +10,12 @@ services:
     depends_on:
       - mongo-db
     environment:
-      - MONGODB_HOSTNAME=mongo-db
-      - MONGODB_DATABASE=cashback_system
+      - MONGODB_URI=mongodb://mongo-db/cashback-system
       - PORT=3001
+      - IP=0.0.0.0
+      - JWT_SECRET=qIlXTHBzNMRkVrqGfXWNXI7xPtRBrDDH
 
   mongo-db:
-    image: bitnami/mongodb:4.2.6-debian-10-r23
+    image: bitnami/mongodb:4.2.6-debian-10-r29
     container_name: mongo-db
     restart: always

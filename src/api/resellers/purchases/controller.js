@@ -1,29 +1,12 @@
-import { check, validationResult } from "express-validator";
-import { insertPurchase, getPurchases, getCashback } from "./purchases";
-
-import {
-  listPurchaseView,
-  purchaseView,
-} from "../../../services/views/purchase";
+import { insertPurchase, getCashback, getPurchases } from "./purchase";
+import { map } from "lodash/collection";
 
 let createPurchase = async (req, res, next) => {
   try {
-    let errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      res
-        .status(400)
-        .json({ validation_errors: errors.array(), message: "Invalid params" });
-    } else {
-      let inserted_purchase = await insertPurchase(req.body, req.params.cpf);
-      res.json(purchaseView(inserted_purchase));
-    }
+    let insertedPurchase = await insertPurchase(req.body, req.params.cpf);
+    res.json(insertedPurchase);
   } catch (err) {
-    if (err.name == "ResellerWithCPFNotFound") {
-      res.status(404).json({ message: err.message });
-    } else {
-      next(err);
-    }
+    handleErrors = (err, res, req, next);
   }
 };
 
@@ -38,24 +21,10 @@ let indexPurchases = async (req, res, next) => {
       });
     } else {
       let response = await getPurchases(req);
-      res.json(listPurchaseView(response));
+      res.json(response);
     }
   } catch (err) {
-    if (err.name == "ResellerWithCPFNotFound") {
-      res.status(404).json({ message: err.message });
-    } else if (
-      err.stack.includes("ObjectID") &&
-      typeof req.query.previous !== "undefined"
-    ) {
-      res.status(400).json({ message: `Query param 'previous' is invalid` });
-    } else if (
-      err.stack.includes("ObjectID") &&
-      typeof req.query.next !== "undefined"
-    ) {
-      res.status(400).json({ message: `Query param 'next' is invalid` });
-    } else {
-      next(err);
-    }
+    handleErrors(err, res, req, next);
   }
 };
 
@@ -68,34 +37,31 @@ let purchasesCashback = async (req, res, next) => {
   }
 };
 
-let validatePurchase = (method) => {
-  switch (method) {
-    case "create": {
-      return [
-        check("code")
-          .exists()
-          .withMessage("code required")
-          .notEmpty()
-          .withMessage("code required")
-          .isString()
-          .withMessage("must be string"),
-        check("date")
-          .exists()
-          .withMessage("date required")
-          .notEmpty()
-          .withMessage("date required")
-          .custom((date) => !isNaN(Date.parse(date)))
-          .withMessage("must be date with format YYYY/MM/DD or YYYY-MM-DD"),
-        check("amount")
-          .exists()
-          .withMessage("amount required")
-          .notEmpty()
-          .withMessage("amount required")
-          .custom((amount) => Number.isInteger(amount))
-          .withMessage("must be integer"),
-      ];
-    }
+let handleErrors = (err, res, req, next) => {
+  if (err.name == "ResellerWithCPFNotFound") {
+    res.status(404).json({ message: err.message });
+  } else if (err.name === "ValidationError") {
+    res.status(400).json({
+      validation_errors: map(err.errors, (error) => {
+        return {
+          path: error.path,
+          message: error.message,
+        };
+      }),
+    });
+  } else if (
+    err.stack.includes("ObjectID") &&
+    typeof req.query.previous !== "undefined"
+  ) {
+    res.status(400).json({ message: `Query param 'previous' is invalid` });
+  } else if (
+    err.stack.includes("ObjectID") &&
+    typeof req.query.next !== "undefined"
+  ) {
+    res.status(400).json({ message: `Query param 'next' is invalid` });
+  } else {
+    next(err);
   }
 };
 
-export { createPurchase, indexPurchases, validatePurchase, purchasesCashback };
+export { createPurchase, indexPurchases, purchasesCashback };

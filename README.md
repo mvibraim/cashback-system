@@ -8,9 +8,8 @@ Calculates the cashback amount for each purchase from a reseller
 - Express with some middleware
 - Clean Code
 - Clean Architecture
-- MongoDB database with official driver
+- MongoDB with Mongoose
 - Docker and Docker Compose
-- Payload validation using express-validation
 - External request with node-fetch
 - Cursor-based pagination without external library
 - Basic and JWT authentication strategies with Passport
@@ -18,7 +17,6 @@ Calculates the cashback amount for each purchase from a reseller
 
 ## Next steps
 
-- Object orientation
 - Application logs
 - Unit and integration tests
 - Setup CircleCI (lint, build and test) and use badge

@@ -1,11 +1,10 @@
 import jwt from "jsonwebtoken";
 import Promise from "bluebird";
-
-const JWT_SECRET = "qIlXTHBzNMRkVrqGfXWNXI7xPtRBrDDH";
+import config from "../../config";
 
 let jwtSign = Promise.promisify(jwt.sign);
 
 let sign = (cpf, options, method = jwtSign) =>
-  method({ cpf }, JWT_SECRET, options);
+  method({ cpf }, config.jwtSecret, options);
 
 export { sign };

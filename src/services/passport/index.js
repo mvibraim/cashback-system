@@ -1,35 +1,25 @@
 import passport from "passport";
 import { BasicStrategy } from "passport-http";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import { databaseConnection } from "../mongo";
-import bcrypt from "bcryptjs";
-
-const JWT_SECRET = "qIlXTHBzNMRkVrqGfXWNXI7xPtRBrDDH";
+import config from "../../config";
+import { Reseller } from "../../api/resellers/model";
 
 passport.use(
   new BasicStrategy(function (cpf, password, done) {
-    databaseConnection()
-      .collection("resellers")
-      .findOne({ cpf: cpf })
-      .then((reseller) => {
-        if (!reseller) {
-          done(true);
-          return null;
-        }
+    Reseller.findOne({ cpf }).then((reseller) => {
+      if (!reseller) {
+        done(true);
+        return null;
+      }
 
-        let passwordIsValid = bcrypt
-          .compare(password, reseller.password)
-          .then((isValid) => isValid);
-
-        if (passwordIsValid) {
+      return reseller
+        .authenticate(password)
+        .then((reseller) => {
           done(null, reseller);
           return null;
-        } else {
-          done(null, false);
-          return null;
-        }
-      })
-      .catch(done);
+        })
+        .catch(done);
+    });
   })
 );
 
@@ -37,13 +27,11 @@ passport.use(
   "jwt",
   new JwtStrategy(
     {
-      secretOrKey: JWT_SECRET,
+      secretOrKey: config.jwtSecret,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     },
     ({ cpf }, done) => {
-      databaseConnection()
-        .collection("resellers")
-        .findOne({ cpf: cpf })
+      Reseller.findOne({ cpf })
         .then((reseller) => {
           done(null, reseller);
           return null;
