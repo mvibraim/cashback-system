@@ -7,7 +7,7 @@ jobs:
   lint-build:
     executor:
       name: node/default
-      tag: "14.2.0-alpine3.11"
+      tag: "14.2"
     steps:
       - checkout
       - node/install-packages
