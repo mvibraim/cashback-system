@@ -42,7 +42,7 @@ make -v
 
 2. Create a reseller
 
-   ```
+   ```bash
    curl -X POST \
    -d '{
          "email": "marcus@gmail.com",
@@ -55,13 +55,15 @@ make -v
 
 3. Authenticate as reseller. This will generate a JWT token as response
 
+   ```bash
+   curl -X POST --user 12345678901 localhost:3001/resellers/auth
    ```
-   curl -X POST --user 12345678901:12345678 localhost:3001/resellers/auth
-   ```
+
+   The password will be prompted
 
 4. Create a purchase. Replace <TOKEN> with the token generated in step 3
 
-   ```
+   ```bash
    curl -X POST -H "Authorization: Bearer <TOKEN>" \
    -d '{
          "code": "546",
@@ -73,6 +75,8 @@ make -v
 
 5. Get purchases. Replace <TOKEN> with the token generated in step 3
 
-   ```
+   ```bash
    curl -X GET -H "Authorization: Bearer <TOKEN>" localhost:3001/resellers/12345678901/purchases
    ```
+
+   The query params `next` and `previous` can be used to navigate between pages. Default page size is 5
