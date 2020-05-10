@@ -3,9 +3,12 @@ import { BasicStrategy } from "passport-http";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import config from "../../config";
 import { Reseller } from "../../api/resellers/model";
+import winston from "../winston";
 
 passport.use(
   new BasicStrategy(function (cpf, password, done) {
+    winston.info("Authenticating reseller");
+
     Reseller.findOne({ cpf }).then((reseller) => {
       if (!reseller) {
         done(true);
@@ -18,7 +21,9 @@ passport.use(
           done(null, reseller);
           return null;
         })
-        .catch(done);
+        .catch((err) => {
+          done(err);
+        });
     });
   })
 );
@@ -31,9 +36,12 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     },
     ({ cpf }, done) => {
+      winston.info("Checking JWT");
+
       Reseller.findOne({ cpf })
         .then((reseller) => {
           done(null, reseller);
+          winston.info("Valid JWT");
           return null;
         })
         .catch(done);
@@ -45,11 +53,22 @@ passport.use(
 let jwt = ({ required } = {}) => (req, res, next) =>
   passport.authenticate("jwt", { session: false }, (err, reseller, info) => {
     if (err || (required && !reseller)) {
+      winston.info(
+        `Error with JWT due to ${err.name}, with message: '${err.message}'`
+      );
+
       return res.status(401).end();
     }
 
     req.login(reseller, { session: false }, (err) => {
-      if (err) return res.status(401).end();
+      if (err) {
+        winston.info(
+          `Error with JWT due to ${err.name}, with message: '${err.message}'`
+        );
+
+        return res.status(401).end();
+      }
+
       next();
     });
   })(req, res, next);
@@ -57,11 +76,19 @@ let jwt = ({ required } = {}) => (req, res, next) =>
 let basic = () => (req, res, next) =>
   passport.authenticate("basic", { session: false }, (err, reseller, info) => {
     if (err || !reseller) {
+      winston.info(
+        `Reseller cannot be authenticated due to ${err.name}, with message: '${err.message}'`
+      );
+
       return res.status(401).end();
     }
 
     req.login(reseller, { session: false }, (err) => {
       if (err) {
+        winston.info(
+          `Reseller cannot be authenticated due to ${err.name}, with message: '${err.message}'`
+        );
+
         return res.status(401).end();
       }
 

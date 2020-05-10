@@ -1,38 +1,60 @@
 import { insertPurchase, getCashback, getPurchases } from "./purchase";
 import { map } from "lodash/collection";
+import winston from "../../../services/winston";
 
 let createPurchase = async (req, res, next) => {
+  winston.info("Creating purchase");
+
   try {
     let insertedPurchase = await insertPurchase(req.body, req.params.cpf);
+    winston.info("Purchase created successfully");
     res.json(insertedPurchase);
   } catch (err) {
+    winston.info(
+      `Purchase cannot be created due to ${err.name}, with message '${err.message}'`
+    );
+
     handleErrors = (err, res, req, next);
   }
 };
 
 let indexPurchases = async (req, res, next) => {
+  winston.info("Retrieving purchases");
+
   try {
     if (
       typeof req.query.previous !== "undefined" &&
       typeof req.query.next !== "undefined"
     ) {
-      res.status(400).json({
-        message: `Can't use query params 'next' and 'previous' simultaneously`,
-      });
+      let message = `Can't use query params 'next' and 'previous' simultaneously`;
+      winston.info(`Purchase cannot be created, with message: '${message}'`);
+      res.status(400).json({ message: message });
     } else {
       let response = await getPurchases(req);
+      winston.info("Purchase retrieved successfully");
       res.json(response);
     }
   } catch (err) {
+    winston.info(
+      `Purchase cannot be created due to ${err.name}, with message '${err.message}'`
+    );
+
     handleErrors(err, res, req, next);
   }
 };
 
 let purchasesCashback = async (req, res, next) => {
+  winston.info("Retrieving purchases cashback amount");
+
   try {
     let amount = await getCashback(req.params.cpf);
+    winston.info("Purchases cashback amount retrieved successfully");
     res.json({ amount: amount });
   } catch (err) {
+    winston.info(
+      `Purchases cashback amount cannot be retrieved due to ${err.name}, with message '${err.message}'`
+    );
+
     next(err);
   }
 };

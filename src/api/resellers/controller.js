@@ -1,11 +1,19 @@
 import { Reseller } from "./model";
 import { map } from "lodash/collection";
+import winston from "../../services/winston";
 
 let createReseller = async (req, res, next) => {
+  winston.info("Creating reseller");
+
   try {
     let reseller = await Reseller.create(req.body);
+    winston.info("Reseller created successfully");
     res.json(reseller.view());
   } catch (err) {
+    winston.info(
+      `Reseller cannot be created due to ${err.name}, with message: '${err.message}'`
+    );
+
     handleErrors(err, res, next);
   }
 };
