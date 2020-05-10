@@ -61,10 +61,10 @@ make -v
 
    The password will be prompted
 
-4. Create a purchase. Replace <TOKEN> with the token generated in step 3
+4. Create a purchase. Replace `TOKEN` with the token generated in step 3
 
    ```bash
-   curl -X POST -H "Authorization: Bearer <TOKEN>" \
+   curl -X POST -H "Authorization: Bearer TOKEN" \
    -d '{
          "code": "546",
          "data": "2020/04/10",
@@ -73,10 +73,16 @@ make -v
    localhost:3001/resellers/12345678901/purchases
    ```
 
-5. Get purchases. Replace <TOKEN> with the token generated in step 3
+5. Get purchases. Replace `TOKEN` with the token generated in step 3
 
    ```bash
-   curl -X GET -H "Authorization: Bearer <TOKEN>" localhost:3001/resellers/12345678901/purchases
+   curl -X GET -H "Authorization: Bearer TOKEN" localhost:3001/resellers/12345678901/purchases
    ```
 
    The query params `next` and `previous` can be used to navigate between pages. Default page size is 5
+
+6. Get cashback amount. Replace `TOKEN` with the token generated in step 3
+
+   ```bash
+   curl -X GET -H "Authorization: Bearer TOKEN" localhost:3001/resellers/12345678901/cashback
+   ```
