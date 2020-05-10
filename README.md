@@ -39,3 +39,40 @@ make -v
 ## Usage
 
 1. Run `make` from root project
+
+2. Create a reseller
+
+   ```
+   curl -X POST \
+   -d '{
+         "email": "marcus@gmail.com",
+         "password": "12345678",
+         "cpf": "12345678901",
+         "full_name": "Marcus"
+       }' \
+   localhost:3001/resellers
+   ```
+
+3. Authenticate as reseller. This will generate a JWT token as response
+
+   ```
+   curl -X POST --user 12345678901:12345678 localhost:3001/resellers/auth
+   ```
+
+4. Create a purchase. Replace <TOKEN> with the token generated in step 3
+
+   ```
+   curl -X POST -H "Authorization: Bearer <TOKEN>" \
+   -d '{
+         "code": "546",
+         "data": "2020/04/10",
+         "amount": 100000
+       }' \
+   localhost:3001/resellers/12345678901/purchases
+   ```
+
+5. Get purchases. Replace <TOKEN> with the token generated in step 3
+
+   ```
+   curl -X GET -H "Authorization: Bearer <TOKEN>" localhost:3001/resellers/12345678901/purchases
+   ```
