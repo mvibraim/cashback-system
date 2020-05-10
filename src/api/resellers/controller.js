@@ -6,7 +6,6 @@ let createReseller = async (req, res, next) => {
     let reseller = await Reseller.create(req.body);
     res.json(reseller.view());
   } catch (err) {
-    console.log(err);
     handleErrors(err, res, next);
   }
 };

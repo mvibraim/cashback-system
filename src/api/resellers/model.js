@@ -36,8 +36,6 @@ let resellerSchema = new Schema(
 );
 
 resellerSchema.pre("save", function (next) {
-  console.log("purchase added");
-
   this.cpf = this.cpf.replace(/\D/g, "");
 
   let salt = 9;

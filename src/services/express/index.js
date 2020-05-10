@@ -5,9 +5,11 @@ import helmet from "helmet";
 import morgan from "morgan";
 import compression from "compression";
 
+/* eslint-disable no-unused-vars */
 let jsonErrorHandler = async (err, req, res, next) => {
   res.status(err.status).send({ error: err });
 };
+/* eslint-enable no-unused-vars */
 
 let app = (apiRoot, routes) => {
   let app = express();
