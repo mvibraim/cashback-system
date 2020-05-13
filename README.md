@@ -7,17 +7,13 @@ Calculates the cashback amount for each purchase from a reseller
 ## Some concepts and technologies used
 
 - Node.js
-- Express with some middleware
+- Express with middleware
 - MongoDB with Mongoose
 - Docker and Docker Compose
 - External request with node-fetch
 - Cursor-based pagination without external library
 - Basic and JWT authentication strategies with Passport
 - Application logs with Winston
-
-## Next steps
-
-- Unit and integration tests. Also, run in CircleCI
 
 ## Prerequisites
 
