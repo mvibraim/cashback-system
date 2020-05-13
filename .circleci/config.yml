@@ -4,7 +4,7 @@ orbs:
   node: circleci/node@2.1
 
 jobs:
-  lint:
+  lint-build-test:
     executor:
       name: node/default
       tag: "14.2"
@@ -12,22 +12,10 @@ jobs:
       - checkout
       - node/install-packages
       - run: npm run lint
-
-  build:
-    steps:
       - run: npm run webpack-build
-
-  test:
-    steps:
       - run: npm test
 
 workflows:
   lint-build-test:
     jobs:
-      - lint
-      - build:
-        requires:
-          - lint
-      - test:
-        requires:
-          - build
+      - lint-build-test
