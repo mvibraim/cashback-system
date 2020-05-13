@@ -9,3 +9,6 @@ Makefile
 README.md
 .eslintrc.yml
 .circleci
+test
+.babelrc
+jest.config.js

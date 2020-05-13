@@ -16,6 +16,6 @@ services:
       - JWT_SECRET=qIlXTHBzNMRkVrqGfXWNXI7xPtRBrDDH
 
   mongo-db:
-    image: bitnami/mongodb:4.2.6-debian-10-r31
+    image: bitnami/mongodb:4.2.6-debian-10-r34
     container_name: mongo-db
     restart: always

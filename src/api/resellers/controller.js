@@ -8,7 +8,7 @@ let createReseller = async (req, res, next) => {
   try {
     let reseller = await Reseller.create(req.body);
     winston.info("Reseller created successfully");
-    res.json(reseller.view());
+    res.status(201).json(reseller.view());
   } catch (err) {
     winston.info(
       `Reseller cannot be created due to ${err.name}, with message: '${err.message}'`

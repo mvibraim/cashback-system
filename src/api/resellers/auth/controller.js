@@ -6,7 +6,7 @@ let auth = ({ user: reseller }, res, next) =>
     .then((token) => {
       if (token) {
         winston.info("Reseller authenticated successfully");
-        res.status(200).json({ token: token });
+        res.status(201).json({ token: token });
       }
 
       return null;

@@ -16,7 +16,7 @@ module.exports = {
     ],
   },
   target: "node",
-  mode: "development",
+  mode: "production",
   entry: "./src/index.js",
   output: {
     path: path.join(__dirname, "build"),

@@ -53,19 +53,13 @@ passport.use(
 let jwt = ({ required } = {}) => (req, res, next) =>
   passport.authenticate("jwt", { session: false }, (err, reseller, info) => {
     if (err || (required && !reseller)) {
-      winston.info(
-        `Error with JWT due to ${err.name}, with message: '${err.message}'`
-      );
-
+      winston.info(`Error with JWT`);
       return res.status(401).end();
     }
 
     req.login(reseller, { session: false }, (err) => {
       if (err) {
-        winston.info(
-          `Error with JWT due to ${err.name}, with message: '${err.message}'`
-        );
-
+        winston.info(`Error with JWT`);
         return res.status(401).end();
       }
 
@@ -76,19 +70,13 @@ let jwt = ({ required } = {}) => (req, res, next) =>
 let basic = () => (req, res, next) =>
   passport.authenticate("basic", { session: false }, (err, reseller, info) => {
     if (err || !reseller) {
-      winston.info(
-        `Reseller cannot be authenticated due to ${err.name}, with message: '${err.message}'`
-      );
-
+      winston.info(`Reseller cannot be authenticated`);
       return res.status(401).end();
     }
 
     req.login(reseller, { session: false }, (err) => {
       if (err) {
-        winston.info(
-          `Reseller cannot be authenticated due to ${err.name}, with message: '${err.message}'`
-        );
-
+        winston.info(`Reseller cannot be authenticated`);
         return res.status(401).end();
       }
 

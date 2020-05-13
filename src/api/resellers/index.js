@@ -22,7 +22,7 @@ resellersRouter.post(
 );
 
 resellersRouter.get(
-  "/:cpf/cashback",
+  "/:cpf/purchases/cashback",
   jwt({ required: true }),
   purchasesCashback
 );

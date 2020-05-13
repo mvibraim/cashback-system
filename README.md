@@ -13,7 +13,6 @@ Calculates the cashback amount for each purchase from a reseller
 - External request with node-fetch
 - Cursor-based pagination without external library
 - Basic and JWT authentication strategies with Passport
-- ES6 syntax
 - Application logs with Winston
 
 ## Next steps
@@ -33,6 +32,10 @@ docker -v
 docker-compose -v
 make -v
 ```
+
+## Test
+
+Just run `npm test`
 
 ## Usage
 
@@ -82,5 +85,5 @@ make -v
 6. Get cashback amount. Replace `TOKEN` with the token generated in step 3
 
    ```bash
-   curl -X GET -H "Authorization: Bearer TOKEN" localhost:3001/resellers/12345678901/cashback
+   curl -X GET -H "Authorization: Bearer TOKEN" localhost:3001/resellers/12345678901/purchases/cashback
    ```

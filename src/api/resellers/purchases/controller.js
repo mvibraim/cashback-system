@@ -8,13 +8,13 @@ let createPurchase = async (req, res, next) => {
   try {
     let insertedPurchase = await insertPurchase(req.body, req.params.cpf);
     winston.info("Purchase created successfully");
-    res.json(insertedPurchase);
+    res.status(201).json(insertedPurchase);
   } catch (err) {
     winston.info(
       `Purchase cannot be created due to ${err.name}, with message '${err.message}'`
     );
 
-    handleErrors = (err, res, req, next);
+    handleErrors(err, res, req, next);
   }
 };
 
@@ -55,12 +55,12 @@ let purchasesCashback = async (req, res, next) => {
       `Purchases cashback amount cannot be retrieved due to ${err.name}, with message '${err.message}'`
     );
 
-    next(err);
+    handleErrors(err, res, req, next);
   }
 };
 
 let handleErrors = (err, res, req, next) => {
-  if (err.name == "ResellerWithCPFNotFound") {
+  if (err.name === "ResellerWithCPFNotFound") {
     res.status(404).json({ message: err.message });
   } else if (err.name === "ValidationError") {
     res.status(400).json({
