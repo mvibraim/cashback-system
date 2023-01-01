@@ -29,8 +29,8 @@
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
